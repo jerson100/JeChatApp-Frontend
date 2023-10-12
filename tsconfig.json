@@ -1,0 +1,13 @@
+{
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths":{
+        "components/*": ["src/components/*"],
+        "src/*": ["src/*"],
+        "screens/*": ["src/screens/*"],
+    }
+  }
+}
