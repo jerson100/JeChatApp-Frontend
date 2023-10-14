@@ -1,61 +1,64 @@
-import Button from 'components/common/Button';
-import Input from 'components/common/Input';
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   SafeAreaView,
+  ScrollView,
   StyleSheet,
-  Text,
-  View,
   StatusBar,
   Animated,
 } from 'react-native';
 import TitleLogin from './components/TitleLogin';
 import {useNavigation} from '@react-navigation/native';
+import Form from './components/Form';
 
 const SignInScreen = () => {
   const {navigate} = useNavigation();
-  const topBgY = new Animated.Value(-100);
-  const bottomBgY = new Animated.Value(100);
-  const opacityBg = new Animated.Value(0);
-
-  const formContentOpacity = new Animated.Value(0);
+  const topBgY = useRef(new Animated.Value(-100));
+  const bottomBgY = useRef(new Animated.Value(100));
+  const opacityBg = useRef(new Animated.Value(0));
+  const formContentOpacity = useRef(new Animated.Value(0));
 
   useEffect(() => {
-    const DURATION = 2000;
-    Animated.stagger(DURATION, [
+    const DURATION = 1000;
+    Animated.stagger(DURATION / 2, [
       Animated.parallel([
-        Animated.timing(topBgY, {
+        Animated.timing(topBgY.current, {
           toValue: 0,
           duration: DURATION,
           useNativeDriver: true,
         }),
-        Animated.timing(bottomBgY, {
+        Animated.timing(bottomBgY.current, {
           toValue: 0,
           duration: DURATION,
           useNativeDriver: true,
         }),
-        Animated.timing(opacityBg, {
+        Animated.timing(opacityBg.current, {
           toValue: 1,
           duration: DURATION,
           useNativeDriver: true,
         }),
       ]),
-      Animated.timing(formContentOpacity, {
+      Animated.timing(formContentOpacity.current, {
         toValue: 1,
         duration: DURATION,
         useNativeDriver: true,
       }),
     ]).start();
+    return () => {
+      formContentOpacity.current.removeAllListeners();
+      topBgY.current.removeAllListeners();
+      bottomBgY.current.removeAllListeners();
+      opacityBg.current.removeAllListeners();
+    };
   }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#202020" />
+    <ScrollView contentContainerStyle={styles.containerScroll}>
       <Animated.Image
         style={[
           styles.topForm,
           {
-            opacity: opacityBg,
-            transform: [{translateY: topBgY}, {rotate: '180deg'}],
+            opacity: opacityBg.current,
+            transform: [{translateY: topBgY.current}, {rotate: '180deg'}],
           },
         ]}
         source={require('../../assets/images/form.png')}
@@ -64,49 +67,40 @@ const SignInScreen = () => {
         style={[
           styles.bottomForm,
           {
-            opacity: opacityBg,
-            transform: [{translateY: bottomBgY}],
+            opacity: opacityBg.current,
+            transform: [{translateY: bottomBgY.current}],
           },
         ]}
         source={require('../../assets/images/form.png')}
       />
-      <Animated.View
-        style={[
-          styles.content,
-          {
-            opacity: formContentOpacity,
-            scaleX: formContentOpacity,
-            scaleY: formContentOpacity,
-          },
-        ]}>
-        <TitleLogin />
-        <View style={styles.inputGroup}>
-          <Input title="Username" />
-          <Input title="Password" />
-        </View>
-        <Button text="Acceder" />
-        <Text style={styles.textSignUpContainer}>
-          ¿No tienes una cuenta?{'  '}
-          <Text
-            onPress={() => {
-              navigate('SignUp' as never);
-            }}
-            style={styles.textSignUpText}>
-            Registrarme
-          </Text>
-        </Text>
-      </Animated.View>
-    </SafeAreaView>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#202020" />
+        <Animated.View
+          style={[
+            styles.content,
+            {
+              opacity: formContentOpacity.current,
+              scaleX: formContentOpacity.current,
+              scaleY: formContentOpacity.current,
+            },
+          ]}>
+          <TitleLogin />
+          <Form navigate={navigate} />
+        </Animated.View>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  containerScroll: {
+    flexGrow: 1,
     justifyContent: 'center',
+  },
+  container: {
     alignItems: 'center',
     paddingHorizontal: 20,
-    position: 'relative',
+    paddingVertical: 120,
   },
   topForm: {
     position: 'absolute',
@@ -126,17 +120,6 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '100%',
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  textSignUpContainer: {
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  textSignUpText: {
-    color: '#2e86de',
-    fontWeight: 'bold',
   },
 });
 

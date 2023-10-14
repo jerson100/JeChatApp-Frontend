@@ -1,10 +1,17 @@
 import {DefaultTheme, Theme} from '@react-navigation/native';
 
-const MyTheme: Theme = {
+const MyTheme: Theme & {
+  colors: {
+    black: string;
+    danger: string;
+  };
+} = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
     background: 'white',
+    black: '#202020',
+    danger: '#ff5555',
   },
 };
 

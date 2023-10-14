@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Image, StatusBar, View, TouchableOpacity} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ProfileScreen from '../ProfileScreen';
@@ -10,6 +10,12 @@ import {IconProp} from '@fortawesome/fontawesome-svg-core';
 const Tab = createBottomTabNavigator();
 
 const HomeScreen = () => {
+  useEffect(() => {
+    console.log('Render HomeScreen');
+    return () => {
+      console.log('Unmount HomeScreen');
+    };
+  }, []);
   return (
     <>
       <StatusBar barStyle="light-content" />

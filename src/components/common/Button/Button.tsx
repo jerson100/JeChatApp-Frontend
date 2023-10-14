@@ -10,9 +10,9 @@ interface ButtonProps extends TouchableOpacityProps {
   text: string;
 }
 
-const Button: FC<ButtonProps> = ({text}) => {
+const Button: FC<ButtonProps> = ({text, ...props}) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} {...props}>
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   );

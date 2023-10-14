@@ -1,48 +1,111 @@
+import React, {useEffect, useRef} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import Button from 'components/common/Button';
-import Input from 'components/common/Input';
 import Title from 'components/common/Title';
-import React from 'react';
-import {SafeAreaView, StyleSheet, View, Text} from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  Image,
+  Animated,
+} from 'react-native';
+import Form from './components/Form';
 
 const SignUpScreen = () => {
   const {navigate} = useNavigation();
+
+  const bgAnimationRef = useRef(new Animated.Value(0));
+  const bgContentRef = useRef(new Animated.Value(0));
+  const bgContentXRef = useRef(new Animated.Value(150));
+
+  useEffect(() => {
+    const DURATION = 1000;
+    Animated.stagger(DURATION / 2, [
+      Animated.timing(bgAnimationRef.current, {
+        toValue: 1,
+        duration: DURATION,
+        useNativeDriver: true,
+      }),
+      Animated.parallel([
+        Animated.timing(bgContentRef.current, {
+          toValue: 1,
+          duration: DURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bgContentXRef.current, {
+          toValue: 0,
+          duration: DURATION,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+    return () => {
+      bgAnimationRef.current.removeAllListeners();
+      bgContentRef.current.removeAllListeners();
+    };
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Title text="Sign Up" style={styles.title} />
-      <View style={styles.inputContainer}>
-        <Input title="Nombre de usuario" />
-        <Input title="Correo Electrónico" />
-        <Input title="Contraseña" />
-        <Input title="Confirmar Contraseña" />
-      </View>
-      <Button text="Registrarme" />
-      <Text style={styles.textSignUpContainer}>
-        ¿Ya tengo una cuenta?{'  '}
-        <Text
-          onPress={() => {
-            navigate('SignIn' as never);
-          }}
-          style={styles.textSignUpText}>
-          Iniciar Sesión
-        </Text>
-      </Text>
-    </SafeAreaView>
+    <ScrollView
+      style={{
+        flex: 1,
+      }}
+      contentContainerStyle={styles.scrollContainer}
+      contentInsetAdjustmentBehavior="automatic">
+      <Animated.Image
+        source={require('../../assets/images/bgForm2.png')}
+        style={[
+          styles.bg,
+          {
+            opacity: bgAnimationRef.current,
+          },
+        ]}
+      />
+      <SafeAreaView style={styles.container}>
+        <Animated.View
+          style={{
+            opacity: bgContentRef.current,
+            transform: [{translateX: bgContentXRef.current}],
+          }}>
+          <Title text="Registro" style={styles.title} />
+          <Form navigate={navigate} />
+          <Text style={styles.textSignUpContainer}>
+            ¿Ya tienes una cuenta?{'  '}
+            <Text
+              onPress={() => {
+                navigate('SignIn' as never);
+              }}
+              style={styles.textSignUpText}>
+              Iniciar Sesión
+            </Text>
+          </Text>
+        </Animated.View>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  bg: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'stretch',
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
+    position: 'relative',
+  },
+  container: {
     paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   title: {
     textAlign: 'center',
     marginBottom: 30,
-  },
-  inputContainer: {
-    marginBottom: 20,
   },
   textSignUpContainer: {
     textAlign: 'center',
