@@ -9,6 +9,8 @@ module.exports = {
           components: './src/components',
           screens: './src/screens',
           src: './src',
+          config: './src/config',
+          types: './src/types',
         },
       },
     ],

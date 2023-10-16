@@ -5,10 +5,15 @@ import Input from 'components/common/Input';
 import {Formik} from 'formik';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {SignUpValidationSchema} from '../singUp.validation';
+import useSignUp from 'src/hooks/useSignUp';
+import useAuthStore from 'src/stores/AuthStore';
+import {Auth} from 'src/types/auth';
 
 type FormProps = Pick<NativeStackNavigationProp<any>, 'navigate'>;
 
 const Form: FC<FormProps> = ({navigate}) => {
+  const {loading, signup} = useSignUp();
+  const updateAuth = useAuthStore(state => state.updateAuth);
   return (
     <Formik
       initialValues={{
@@ -17,8 +22,15 @@ const Form: FC<FormProps> = ({navigate}) => {
         password: '',
         confirmPassword: '',
       }}
-      onSubmit={values => {
-        console.log(values);
+      onSubmit={async (values, {resetForm}) => {
+        try {
+          const newUser = await signup(values);
+          console.log(newUser);
+          updateAuth(newUser as Auth);
+          resetForm();
+        } catch (e) {
+          console.log(e);
+        }
       }}
       validationSchema={SignUpValidationSchema}>
       {({handleChange, values, handleSubmit, errors, touched, handleBlur}) => (

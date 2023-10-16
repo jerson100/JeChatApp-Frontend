@@ -6,7 +6,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  Image,
   Animated,
 } from 'react-native';
 import Form from './components/Form';

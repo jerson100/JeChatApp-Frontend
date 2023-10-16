@@ -9,9 +9,14 @@ import AppRouter from 'components/routers/AppRouter';
 import React from 'react';
 import 'src/config/fontawesome';
 import {StyleSheet} from 'react-native';
+import {AuthProvider} from 'src/contexts/AuthContext';
 
 const App = () => {
-  return <AppRouter />;
+  return (
+    // <AuthProvider>
+    <AppRouter />
+    // </AuthProvider>
+  );
 };
 
 const styles = StyleSheet.create({

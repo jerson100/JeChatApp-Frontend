@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -10,6 +10,7 @@ import SignUpScreen from 'screens/SignUpScreen';
 import SearchScreen from 'screens/SearchScreen';
 import SplashScreen from 'src/screens/SplashScreen';
 import MyTheme from 'src/config/theme';
+import useAuthStore from 'src/stores/AuthStore';
 
 const Stack = createNativeStackNavigator<RouteParamList>();
 
@@ -18,8 +19,16 @@ const optionsHiddenHeader = {
 };
 
 const AppRouter = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [initialized, setInitialized] = useState(true);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const initialized = useAuthStore(state => state.initialized);
+  const init = useAuthStore(state => state.init);
+  useEffect(() => {
+    (async () => {
+      console.log('verificando usuario');
+      await init();
+      console.log('Se terminó de verificar el usuario');
+    })();
+  }, [init]);
   return (
     <NavigationContainer theme={MyTheme}>
       <StatusBar barStyle="dark-content" />

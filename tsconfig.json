@@ -8,6 +8,8 @@
         "components/*": ["src/components/*"],
         "src/*": ["src/*"],
         "screens/*": ["src/screens/*"],
+        "config/*": ["src/config/*"],
+        "types/*": ["src/types/*"],
     }
   }
 }
