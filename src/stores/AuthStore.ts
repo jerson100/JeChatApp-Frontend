@@ -3,6 +3,7 @@ import {create} from 'zustand';
 import AuthService from 'src/services/authService';
 import ResponseAxiosError from 'src/lib/ResponseAxiosError';
 import EncryptedSecureStorage from 'src/config/encryptedStorage';
+import {Socket, io} from 'socket.io-client';
 
 type AuthStore = {
   auth: Auth | null;
@@ -14,22 +15,32 @@ type AuthStore = {
   logout: () => Promise<void>;
   updateAuth: (auth: Auth | null) => void;
   init: () => Promise<void>;
+  socket: Socket;
+  changeUrlImageProfile: (url: string) => void;
 };
 
-const useAuthStore = create<AuthStore>(set => ({
+const useAuthStore = create<AuthStore>((set, get) => ({
   auth: null,
   signInLoading: false,
   isAuthenticated: false,
   errorSignIn: '',
   initialized: false,
+  socket: io('http://localhost:3504', {
+    autoConnect: false,
+  }),
   init: async () => {
     const token = await EncryptedSecureStorage.getItem('AUTH_TOKEN');
     if (token) {
       try {
         const auth = await AuthService.verify();
-        set({auth, isAuthenticated: true});
+        const socket = get().socket;
+        socket.auth = {user: token};
+        socket.connect();
+        socket.on('connect_error', err => {
+          console.log(`${err.message}`);
+        });
+        set({auth, isAuthenticated: true, socket});
       } catch (e) {
-        console.log(e);
         if (e instanceof ResponseAxiosError) {
         }
       }
@@ -41,7 +52,15 @@ const useAuthStore = create<AuthStore>(set => ({
       set({signInLoading: true, errorSignIn: ''});
       const response = await AuthService.login(username, password, config);
       await EncryptedSecureStorage.setItem('AUTH_TOKEN', response.token);
-      set({signInLoading: false, isAuthenticated: true, auth: response});
+      const socket = get().socket;
+      socket.auth = {user: response.token};
+      socket.connect();
+      set({
+        signInLoading: false,
+        isAuthenticated: true,
+        auth: response,
+        socket,
+      });
       Promise.resolve();
     } catch (e) {
       if (e instanceof ResponseAxiosError) {
@@ -56,7 +75,9 @@ const useAuthStore = create<AuthStore>(set => ({
   },
   logout: async () => {
     await EncryptedSecureStorage.removeItem('AUTH_TOKEN');
-    set({isAuthenticated: false, auth: null});
+    const socket = get().socket;
+    socket.disconnect();
+    set({isAuthenticated: false, auth: null, socket});
   },
   updateAuth: auth => {
     if (auth) {
@@ -65,6 +86,28 @@ const useAuthStore = create<AuthStore>(set => ({
       set({auth: null, isAuthenticated: false});
     }
   },
+  changeUrlImageProfile: (url: string) => {
+    set(state => ({
+      auth: state.auth
+        ? {
+            token: state.auth.token,
+            user: {
+              ...state.auth.user,
+              urlImageProfile: url,
+            },
+          }
+        : null,
+    }));
+  },
+  //   connectSocket: () => {
+  //     const auth = get().auth;
+  //     const socket = get().socket;
+  //     if (auth) {
+  //       socket.auth = auth;
+  //       socket.connect();
+  //       set({socket});
+  //     }
+  //   },
 }));
 
 export default useAuthStore;
