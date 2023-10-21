@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Image, StatusBar, View, TouchableOpacity} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ProfileScreen from '../ProfileScreen';
@@ -6,16 +6,26 @@ import FriendsScreen from '../FriendsScreen';
 import RequestsScreen from '../RequestsScreen';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {IconProp} from '@fortawesome/fontawesome-svg-core';
+import useAuthStore from 'src/stores/AuthStore';
+import {useNavigation} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 const HomeScreen = () => {
-  useEffect(() => {
-    console.log('Render HomeScreen');
-    return () => {
-      console.log('Unmount HomeScreen');
-    };
-  }, []);
+  const {navigate} = useNavigation();
+  const user = useAuthStore(state => state.auth?.user);
+  //   console.log(user);
+  //   useEffect(() => {
+  //     console.log('Render HomeScreen');
+  //     return () => {
+  //       console.log('Unmount HomeScreen');
+  //     };
+  //   }, []);
+
+  const toSearchScreen = () => {
+    navigate('Search' as never);
+  };
+
   return (
     <>
       <StatusBar barStyle="light-content" />
@@ -24,18 +34,25 @@ const HomeScreen = () => {
           headerLeft: () => (
             <View style={{marginLeft: 16}}>
               <Image
-                source={require('../../assets/images/logo-user.png')}
+                source={
+                  user && user.urlImageProfile
+                    ? {
+                        uri: user.urlImageProfile,
+                      }
+                    : require('../../assets/images/logo-user.png')
+                }
                 style={{
                   width: 28,
                   height: 28,
                   borderRadius: 14,
                   backgroundColor: '#c0c0c0',
+                  objectFit: 'cover',
                 }}
               />
             </View>
           ),
           headerRight: () => (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={toSearchScreen}>
               <FontAwesomeIcon
                 style={{marginRight: 16}}
                 icon="magnifying-glass"

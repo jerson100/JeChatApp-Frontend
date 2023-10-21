@@ -79,9 +79,13 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     socket.disconnect();
     set({isAuthenticated: false, auth: null, socket});
   },
-  updateAuth: auth => {
+  updateAuth: async auth => {
     if (auth) {
-      set({auth, isAuthenticated: true});
+      await EncryptedSecureStorage.setItem('AUTH_TOKEN', auth.token);
+      const socket = get().socket;
+      socket.auth = {user: auth.token};
+      socket.connect();
+      set({auth, isAuthenticated: true, socket});
     } else {
       set({auth: null, isAuthenticated: false});
     }

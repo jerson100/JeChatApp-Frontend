@@ -54,7 +54,19 @@ const AppRouter = () => {
               }}
             />
             <Stack.Screen name="Message" component={MessageScreen} />
-            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen
+              name="Search"
+              component={SearchScreen}
+              options={{
+                animation: 'slide_from_bottom',
+                presentation: 'transparentModal',
+                // headerShown: false,
+                contentStyle: {
+                  //   marginTop: 150,
+                  backgroundColor: 'white',
+                },
+              }}
+            />
           </>
         )}
       </Stack.Navigator>
