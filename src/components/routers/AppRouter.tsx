@@ -58,13 +58,14 @@ const AppRouter = () => {
               name="Search"
               component={SearchScreen}
               options={{
-                animation: 'slide_from_bottom',
+                // animation: 'slide_from_bottom',
+                animation: 'fade',
                 presentation: 'transparentModal',
-                // headerShown: false,
-                contentStyle: {
-                  //   marginTop: 150,
-                  backgroundColor: 'white',
-                },
+                headerShown: false,
+                // contentStyle: {
+                //   //   flex: 1,
+                //   backgroundColor: 'red',
+                // },
               }}
             />
           </>

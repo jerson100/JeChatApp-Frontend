@@ -10,11 +10,14 @@ import React from 'react';
 import 'src/config/fontawesome';
 import {StyleSheet} from 'react-native';
 import {AuthProvider} from 'src/contexts/AuthContext';
+// import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const App = () => {
   return (
     // <AuthProvider>
+
     <AppRouter />
+
     // </AuthProvider>
   );
 };

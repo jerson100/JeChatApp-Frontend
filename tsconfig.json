@@ -4,12 +4,12 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "paths":{
-        "components/*": ["src/components/*"],
-        "src/*": ["src/*"],
-        "screens/*": ["src/screens/*"],
-        "config/*": ["src/config/*"],
-        "types/*": ["src/types/*"],
+    "paths": {
+      "components/*": ["src/components/*"],
+      "src/*": ["src/*"],
+      "screens/*": ["src/screens/*"],
+      "config/*": ["src/config/*"],
+      "types/*": ["src/types/*"]
     }
   }
 }
