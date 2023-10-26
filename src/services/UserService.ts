@@ -1,5 +1,7 @@
 import axiosInstance from 'config/axiosConfig';
 import {decode} from 'base-64';
+import {User} from 'src/types/user';
+import {AxiosRequestConfig} from 'axios';
 
 interface ImageUpload {
   uri: string;
@@ -25,5 +27,16 @@ export default class UserService {
       },
     });
     return response.data.urlImageProfile;
+  }
+  static async getAllSearchingUsers(
+    username: string,
+    config?: AxiosRequestConfig,
+  ): Promise<User[]> {
+    let _config = config ? config : {};
+    const response = await axiosInstance.get<User[]>('/users', {
+      ..._config,
+      params: {username: username},
+    });
+    return response.data;
   }
 }

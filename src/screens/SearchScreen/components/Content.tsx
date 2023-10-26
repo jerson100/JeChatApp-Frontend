@@ -4,17 +4,11 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import Input from 'components/common/Input';
 import {BottomSheetFlatList, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import Information from 'components/common/Information';
+import SearchResult from './SearchResult';
 
 const Content = () => {
   const [searchText, setSearchText] = useState('');
 
-  const data = useMemo(
-    () =>
-      Array(20)
-        .fill(0)
-        .map((_, index) => `index-${index}`),
-    [],
-  );
   //   const renderItem = useCallback(
   //     (item: ListRenderItemInfo<string>) => (
   //       <View style={styles.itemContainer}>
@@ -29,28 +23,12 @@ const Content = () => {
         <Input
           value={searchText}
           onChangeText={setSearchText}
-          placeholder="Search"
+          placeholder="Buscar"
           leftIcon={<FontAwesomeIcon icon="search" size={20} color="#707070" />}
         />
       </View>
       <BottomSheetScrollView style={styles.scrollContainer}>
-        {searchText.length === 0 ? (
-          <Information
-            icon={<FontAwesomeIcon icon="baby" size={60} color="#707070" />}
-            centered
-            text="search for a city or a country"
-          />
-        ) : (
-          <View style={{gap: 16, marginBottom: 16}}>
-            {data.map((item, index) => {
-              return (
-                <View key={index} style={styles.itemContainer}>
-                  <Text>{item}</Text>
-                </View>
-              );
-            })}
-          </View>
-        )}
+        <SearchResult searchText={searchText} />
       </BottomSheetScrollView>
 
       {/* <BottomSheetFlatList
@@ -65,7 +43,7 @@ const Content = () => {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    gap: 16,
+    gap: 32,
     flexGrow: 1,
   },
   itemContainer: {
