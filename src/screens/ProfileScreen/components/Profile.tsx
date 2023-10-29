@@ -1,7 +1,8 @@
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import IconButton from 'components/common/Button/IconButton';
+import Thumbnail from 'components/common/Thumbnail';
 import React from 'react';
-import {StyleSheet, TouchableOpacity, Image, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import ImagePicker, {Image as ImageI} from 'react-native-image-crop-picker';
 import UserService from 'src/services/UserService';
 import useAuthStore from 'src/stores/AuthStore';
@@ -34,14 +35,11 @@ const Profile = () => {
   };
   return (
     <TouchableOpacity onPress={changeImage} style={styles.container}>
-      <Image
-        style={styles.image}
-        source={
-          user?.urlImageProfile
-            ? {uri: user.urlImageProfile}
-            : require('../../../assets/images/logo-user.png')
-        }
-        // source={require('../../../assets/images/logo-user.png')}
+      <Thumbnail
+        uri={user?.urlImageProfile}
+        style={{
+          marginTop: -90,
+        }}
       />
       <View style={styles.contentImage}>
         <IconButton
@@ -62,13 +60,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-  },
-  image: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: '#c0c0c0',
-    marginTop: -90,
   },
 });
 

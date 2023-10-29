@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useEffect, useRef} from 'react';
 import EmptyDataSearch from './EmptyDataSearch';
 import EmptyTextSearch from './EmptyTextSearch';
 import SearchList from 'components/common/SearchList';
@@ -17,30 +17,45 @@ const SearchResult: FC<SearchResultProps> = ({searchText}) => {
   const loading = useSearchUserStore(state => state.loading);
   const error = useSearchUserStore(state => state.error);
   const users = useSearchUserStore(state => state.users);
-
-  const searchTextDebounced = useDebounce(searchText, 300);
+  const searchTextDebounced = useDebounce(searchText, 150);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    (async () => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const ab = new AbortController();
+    abortControllerRef.current = ab;
+    const fetching = async () => {
       if (searchTextDebounced === '') {
         clearAll();
         return;
       }
-      await getUsers(searchTextDebounced);
-    })();
-  }, [searchTextDebounced, clearAll]);
+      await getUsers(searchTextDebounced, ab.signal);
+    };
+    fetching();
+    return () => ab.abort();
+  }, [searchTextDebounced, clearAll, getUsers]);
 
   if (loading) return <SearchLoading />;
   if (error) return <SearchError text={error} />;
 
   return (
     <>
-      {searchText === '' ? (
+      {searchTextDebounced === '' ? (
         <EmptyTextSearch />
-      ) : users.length === 0 ? (
+      ) : users && users.length === 0 ? (
         <EmptyDataSearch />
       ) : (
-        <SearchList data={users} />
+        <SearchList data={users || []} />
       )}
     </>
   );

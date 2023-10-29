@@ -6,3 +6,16 @@ export interface User {
   updatedAt?: string;
   urlImageProfile?: string;
 }
+
+export type UserSearch = User & {
+  statusFriend?: EStatusFriend;
+};
+
+export type UserAllResponse = {
+  metadata: {
+    totalItems: number;
+    currentPage: number;
+    itemsPerPage: number;
+  };
+  users: UserSearch[];
+};

@@ -4,6 +4,7 @@ const MyTheme: Theme & {
   colors: {
     black: string;
     danger: string;
+    border: string;
   };
 } = {
   ...DefaultTheme,
@@ -12,6 +13,7 @@ const MyTheme: Theme & {
     background: 'white',
     black: '#202020',
     danger: '#ff5555',
+    border: '#f0f0f0',
   },
 };
 

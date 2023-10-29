@@ -1,6 +1,6 @@
 import axiosInstance from 'config/axiosConfig';
-import {decode} from 'base-64';
-import {User} from 'src/types/user';
+// import {decode} from 'base-64';
+import {UserAllResponse} from 'src/types/user';
 import {AxiosRequestConfig} from 'axios';
 
 interface ImageUpload {
@@ -14,7 +14,6 @@ export default class UserService {
     {type, uri, name}: ImageUpload,
     idUser: string,
   ): Promise<string> {
-    // const blob = new Blob([decode(uri)], {type, lastModified: Date.now()});
     const d = new FormData();
     d.append('image', {
       uri: uri,
@@ -31,9 +30,9 @@ export default class UserService {
   static async getAllSearchingUsers(
     username: string,
     config?: AxiosRequestConfig,
-  ): Promise<User[]> {
+  ): Promise<UserAllResponse> {
     let _config = config ? config : {};
-    const response = await axiosInstance.get<User[]>('/users', {
+    const response = await axiosInstance.get<UserAllResponse>('/users', {
       ..._config,
       params: {username: username},
     });

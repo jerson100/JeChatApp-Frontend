@@ -20,7 +20,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   response => response,
   (error: AxiosError) => {
-    console.log(error.code);
+    console.log(error);
     if (error.response) {
       const {
         response: {data, status},

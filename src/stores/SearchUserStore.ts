@@ -1,50 +1,43 @@
 import ResponseAxiosError from 'src/lib/ResponseAxiosError';
 import UserService from 'src/services/UserService';
-import {User} from 'src/types/user';
+import {UserSearch} from 'src/types/user';
 import {create} from 'zustand';
 
 interface SearchUserStore {
-  users: User[];
+  users: UserSearch[] | null;
   loading: boolean;
   error: string | null;
-  getUsers: (searchText: string) => Promise<void>;
-  abortController?: AbortController;
+  page: number;
+  getUsers: (searchText: string, signal: AbortSignal) => Promise<void>;
   clearAll: () => void;
 }
 
 const useSearchUserStore = create<SearchUserStore>((set, get) => ({
-  users: [],
+  users: null,
   loading: false,
   error: null,
-  getUsers: async searchText => {
+  page: 1,
+  getUsers: async (searchText, signal) => {
     set({loading: true, error: null});
-    const abortController = get().abortController;
-    if (abortController) {
-      abortController.abort();
-    }
-    const newAbortController = new AbortController();
-    set({abortController});
     try {
-      const users = await UserService.getAllSearchingUsers(searchText, {
-        signal: newAbortController.signal,
+      const allusers = await UserService.getAllSearchingUsers(searchText, {
+        signal: signal,
       });
-      set({users});
+      const users = allusers.users;
+      const page = allusers.metadata.currentPage;
+      set({users, page, loading: false});
     } catch (error) {
-      console.log(error);
       if (error instanceof ResponseAxiosError) {
         if (error.status !== 0) {
-          set({error: error.message});
+          set({error: error.message, loading: false});
+        } else {
+          console.log(error);
         }
       }
-    } finally {
-      set({
-        abortController: undefined,
-        loading: false,
-      });
     }
   },
   clearAll: () => {
-    set({users: [], loading: false, error: null});
+    set({users: null, loading: false, error: null, page: 1});
   },
 }));
 

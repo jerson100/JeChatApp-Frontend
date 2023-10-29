@@ -1,29 +1,34 @@
 import React, {FC} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {User} from 'src/types/user';
+import {View, StyleSheet, Text} from 'react-native';
+import {UserSearch} from 'src/types/user';
+import SearchRow from './components/SearchRow';
+import {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 
 interface SearchListProps {
-  data: User[];
+  data: UserSearch[];
 }
 
 const SearchList: FC<SearchListProps> = ({data}) => {
   return (
     <>
-      <View style={{gap: 16, marginBottom: 16}}>
-        {data.map((item, index) => {
-          return (
-            <View key={index} style={styles.itemContainer}>
-              <Text>{item.username}</Text>
-            </View>
-          );
-        })}
+      <View style={styles.container}>
+        <BottomSheetFlatList
+          style={styles.content}
+          data={data}
+          renderItem={item => <SearchRow user={item.item} key={item.index} />}
+        />
       </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  itemContainer: {},
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
 });
 
 export default SearchList;

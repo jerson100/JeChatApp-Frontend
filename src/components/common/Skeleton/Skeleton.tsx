@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useMemo, useRef} from 'react';
-import {Animated, StyleSheet, StyleProp, ViewStyle} from 'react-native';
+import {Animated, StyleProp, ViewStyle} from 'react-native';
 
 type CircleSkeletonProps = {isCircle?: true; width?: number};
 type RectangleSkeletonProps = {
@@ -61,7 +61,6 @@ const Skeleton: FC<SkeletonProps> = ({
   return (
     <Animated.View
       style={[
-        styles.container,
         memoStyles,
         {
           opacity: opacityRef.current,
@@ -70,11 +69,5 @@ const Skeleton: FC<SkeletonProps> = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default Skeleton;
