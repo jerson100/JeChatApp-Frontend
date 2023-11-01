@@ -1,3 +1,5 @@
+import {Friend} from './friend';
+
 export interface User {
   _id?: string;
   username: string;
@@ -8,7 +10,8 @@ export interface User {
 }
 
 export type UserSearch = User & {
-  statusFriend?: EStatusFriend;
+  friend?: Friend;
+  loading?: boolean;
 };
 
 export type UserAllResponse = {

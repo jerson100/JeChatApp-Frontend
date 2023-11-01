@@ -1,50 +1,36 @@
-import React, {FC, memo, useMemo} from 'react';
+import React, {FC, memo} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import Thumbnail from 'components/common/Thumbnail';
 import MyTheme from 'src/config/theme';
 import {UserSearch} from 'src/types/user';
-import Button from 'components/common/Button';
-import {EStatusFriend} from 'src/config/user.const';
-import IconButton from 'components/common/Button/IconButton';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import FriendStatus from './FriendStatus';
+import {differenceInDays} from 'src/lib/date';
 
 interface SearchRowListProps {
-  user: UserSearch;
+  userSearch: UserSearch;
 }
 
-const SearchRow: FC<SearchRowListProps> = ({user}) => {
-  const status = useMemo(() => {
-    if (user.statusFriend) {
-      if (user.statusFriend === EStatusFriend.ACCEPTED) {
-        return (
-          <IconButton
-            size="smaller"
-            style={{backgroundColor: '#20d080'}}
-            rounded
-            icon={<FontAwesomeIcon icon="check" size={20} color="#fff" />}
-          />
-        );
-      } else {
-        return (
-          <Button
-            style={{backgroundColor: '#ff9500'}}
-            text="Pendiente"
-            size="small"
-          />
-        );
-      }
-    } else {
-      return <Button text="Agregar" size="small" />;
-    }
-  }, []);
-
+const SearchRow: FC<SearchRowListProps> = ({userSearch}) => {
+  const isNew = userSearch.createdAt
+    ? differenceInDays(new Date(), new Date(userSearch.createdAt)) < 7
+    : false;
   return (
     <View style={styles.itemContainer}>
       <View style={styles.left}>
-        <Thumbnail uri={user.urlImageProfile} width={52} />
-        <Text style={styles.username}>{user.username.toLowerCase()}</Text>
+        <Thumbnail uri={userSearch.urlImageProfile} width={52} isNew={isNew} />
+        <View style={styles.detailscontainer}>
+          <Text style={styles.username}>
+            {userSearch.username.toLowerCase()}
+          </Text>
+          <Text style={styles.email}>{userSearch.email.toLowerCase()}</Text>
+        </View>
       </View>
-      <View>{status}</View>
+      <View>
+        <FriendStatus
+          friend={userSearch.friend}
+          idUser={userSearch._id || ''}
+        />
+      </View>
     </View>
   );
 };
@@ -68,6 +54,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: MyTheme.colors.text,
+  },
+  detailscontainer: {
+    gap: 2,
+  },
+  email: {
+    fontSize: 14,
+    color: '#8e8e93',
   },
 });
 

@@ -15,7 +15,9 @@ const SearchList: FC<SearchListProps> = ({data}) => {
         <BottomSheetFlatList
           style={styles.content}
           data={data}
-          renderItem={item => <SearchRow user={item.item} key={item.index} />}
+          renderItem={item => (
+            <SearchRow userSearch={item.item} key={item.index} />
+          )}
         />
       </View>
     </>

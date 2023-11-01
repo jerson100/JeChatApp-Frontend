@@ -6,6 +6,8 @@ interface ButtonProps extends TouchableOpacityProps {
   text: string;
   leftIcon?: ReactNode;
   size?: keyof typeof BUTTON_SIZE;
+  loading?: boolean;
+  loadingColor?: string;
 }
 
 export {ButtonProps};

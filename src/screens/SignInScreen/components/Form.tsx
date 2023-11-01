@@ -15,6 +15,7 @@ type FormProps = Pick<StackNavigationProp<any>, 'navigate'>;
 const Form: FC<FormProps> = ({navigate}) => {
   //   const {login, auth} = useAuthContext();
   const login = useAuthStore(state => state.login);
+  const signInLoading = useAuthStore(state => state.signInLoading);
   return (
     <Formik
       initialValues={{
@@ -62,6 +63,7 @@ const Form: FC<FormProps> = ({navigate}) => {
           </View>
           <Button
             text="Acceder"
+            loading={signInLoading}
             onPress={() => {
               handleSubmit();
             }}

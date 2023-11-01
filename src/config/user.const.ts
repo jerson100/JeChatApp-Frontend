@@ -3,4 +3,6 @@ export enum EStatusFriend {
   ACCEPTED = 'ACCEPTED',
   CANCELED = 'CANCELED',
   BLOCKED = 'BLOCKED',
+  SEND = 'SEND',
+  ACCEPT = 'ACCEPT',
 }
