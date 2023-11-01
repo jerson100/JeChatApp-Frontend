@@ -6,6 +6,7 @@ import {create} from 'zustand';
 
 interface SearchUserState {
   users: UserSearch[] | null;
+  searchText: string;
   loading: boolean;
   error: string | null;
   page: number;
@@ -15,6 +16,8 @@ interface SearchUserActions {
   getUsers: (searchText: string, signal: AbortSignal) => Promise<void>;
   clearAll: () => void;
   changeStatus: (friend: Friend) => void;
+  setSearchText: (searchText: string) => void;
+  clearSearch: () => void;
 }
 
 const initialState: SearchUserState = {
@@ -22,6 +25,7 @@ const initialState: SearchUserState = {
   loading: false,
   error: null,
   page: 1,
+  searchText: '',
 };
 
 const useSearchUserStore = create<SearchUserState & SearchUserActions>(
@@ -67,6 +71,12 @@ const useSearchUserStore = create<SearchUserState & SearchUserActions>(
         }
         return prev;
       });
+    },
+    setSearchText: searchText => {
+      set({searchText});
+    },
+    clearSearch: () => {
+      set(initialState);
     },
   }),
 );
