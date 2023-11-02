@@ -31,34 +31,39 @@ const FriendStatus: FC<FriendStatusProps> = ({friend, idUser}) => {
           icon={<FontAwesomeIcon icon="check" size={20} color="#fff" />}
         />
       );
-    } else if (friend.senderUserId === idUserSession) {
-      return (
-        <Button
-          style={{backgroundColor: '#ff9500'}}
-          disabled
-          text="Pendiente"
-          size="smaller"
-        />
-      );
     } else {
-      return (
-        <Button
-          text="Aceptar"
-          size="smaller"
-          style={{
-            backgroundColor: '#2078d0',
-          }}
-          loading={loading}
-          onPress={async () => {
-            try {
-              const friend = await changeStatusApi(EStatusFriend.ACCEPT);
-              if (friend) changeStatus(friend);
-            } catch (e) {
-              //   console.log(e);
-            }
-          }}
-        />
-      );
+      if (typeof friend.senderUserId == 'object') {
+        console.log(friend.senderUserId._id);
+        if (friend.senderUserId._id === idUserSession) {
+          return (
+            <Button
+              style={{backgroundColor: '#ff9500'}}
+              disabled
+              text="Pendiente"
+              size="smaller"
+            />
+          );
+        } else {
+          return (
+            <Button
+              text="Aceptar"
+              size="smaller"
+              style={{
+                backgroundColor: '#2078d0',
+              }}
+              loading={loading}
+              onPress={async () => {
+                try {
+                  const friend = await changeStatusApi(EStatusFriend.ACCEPT);
+                  if (friend) changeStatus(friend);
+                } catch (e) {
+                  //   console.log(e);
+                }
+              }}
+            />
+          );
+        }
+      }
     }
   } else {
     return (

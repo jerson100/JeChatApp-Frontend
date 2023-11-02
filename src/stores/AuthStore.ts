@@ -4,6 +4,11 @@ import AuthService from 'src/services/authService';
 import ResponseAxiosError from 'src/lib/ResponseAxiosError';
 import EncryptedSecureStorage from 'src/config/encryptedStorage';
 import {Socket, io} from 'socket.io-client';
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+  SocketIOClient,
+} from 'src/types/socket';
 
 type AuthStore = {
   auth: Auth | null;
@@ -15,7 +20,7 @@ type AuthStore = {
   logout: () => Promise<void>;
   updateAuth: (auth: Auth | null) => void;
   init: () => Promise<void>;
-  socket: Socket;
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>;
   changeUrlImageProfile: (url: string) => void;
 };
 

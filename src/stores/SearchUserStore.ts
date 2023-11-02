@@ -1,7 +1,8 @@
 import ResponseAxiosError from 'src/lib/ResponseAxiosError';
 import UserService from 'src/services/UserService';
 import {Friend} from 'src/types/friend';
-import {UserSearch} from 'src/types/user';
+import {UserSearch, User} from 'src/types/user';
+import useAuthStore from './AuthStore';
 import {create} from 'zustand';
 
 interface SearchUserState {
@@ -56,16 +57,24 @@ const useSearchUserStore = create<SearchUserState & SearchUserActions>(
     changeStatus: friend => {
       set(prev => {
         if (prev.users) {
-          const index = prev.users.findIndex(
-            user =>
+          const index = prev.users.findIndex((user: UserSearch) => {
+            const senderUserId = friend.senderUserId as User;
+            const receiverUserId = friend.receiverUserId as User;
+            console.log(senderUserId);
+            return (
               user.friend?._id === friend._id ||
-              user._id === friend.senderUserId ||
-              user._id === friend.receiverUserId,
-          );
+              user._id === senderUserId._id ||
+              user._id === receiverUserId._id
+            );
+          });
           if (index != -1) {
             const newUsers = [...prev.users];
             const us = newUsers[index];
-            newUsers.splice(index, 1, {...us, friend: friend});
+            const newUs = {...us, friend: friend};
+            newUsers.splice(index, 1, newUs);
+            useAuthStore
+              .getState()
+              .socket?.emit('changeStatusFriend', friend, us._id as string);
             return {users: newUsers};
           }
         }

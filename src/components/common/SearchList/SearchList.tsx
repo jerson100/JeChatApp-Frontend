@@ -12,6 +12,7 @@ const SearchList: FC<SearchListProps> = ({data}) => {
   return (
     <>
       <View style={styles.container}>
+        {/* <Text>{JSON.stringify(data)}</Text> */}
         <BottomSheetFlatList
           style={styles.content}
           data={data}
