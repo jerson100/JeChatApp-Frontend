@@ -12,11 +12,14 @@ export type Payload = {
 export interface ServerToClientEvents {
   //   changeStatusFriend: (friend: Friend) => void;
   changeStatusFriend: (friend: Friend) => void;
+  removeRequest: (idRequest: string) => void;
+  stateChangeInSearch: (friend: Friend) => void;
 }
 
 export interface ClientToServerEvents {
   changeStatusFriend: (friend: Friend, toIdUser: string) => void;
   getRequest: (callback: (users: Friend[]) => void) => void;
+  acceptRequest: (friend: Friend, callback: (error?: string) => void) => void;
 }
 
 export interface InterServerEvents {

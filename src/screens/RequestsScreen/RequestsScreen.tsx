@@ -1,28 +1,28 @@
 import React, {useEffect} from 'react';
-import {Text, View, ScrollView} from 'react-native';
+import {ScrollView} from 'react-native';
+import RequestItemLoading from 'components/common/loadings/RequestItemLoading';
 import useRequestStore from 'src/stores/RequestStore';
 import {useShallow} from 'zustand/react/shallow';
+import RequestListError from './components/RequestListError';
+import RequestList from './components/RequestList';
 
 const RequestsScreen = () => {
-  const {onEvents, loading, request} = useRequestStore(
+  const {onEvents, loading, error} = useRequestStore(
     useShallow(state => ({
       onEvents: state.onEvents,
       loading: state.loading,
       request: state.request,
+      error: state.error,
     })),
   );
   useEffect(() => {
     onEvents();
   }, []);
-  return (
-    <View>
-      <ScrollView>
-        <Text>RequestsScreen</Text>
-        <Text>{loading ? 'true' : 'false'}</Text>
-        <Text>{JSON.stringify(request, null, 2)}</Text>
-      </ScrollView>
-    </View>
-  );
+
+  if (loading) return <RequestItemLoading />;
+  if (error) return <RequestListError text={error} />;
+
+  return <RequestList />;
 };
 
 export default RequestsScreen;

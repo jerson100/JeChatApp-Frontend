@@ -3,20 +3,29 @@ import useAuthStore from './AuthStore';
 import {Friend} from 'src/types/friend';
 
 interface RequestState {
-  request: Friend[] | null;
+  request: Friend[];
   loading: boolean;
   error: string | null;
+
+  //   acceptRequestLoading: boolean;
+  //   acceptRequestError: string | null;
 }
 
 interface RequestActions {
   onEvents: () => void;
   clearAll: () => void;
+  acceptRequest: (
+    friend: Friend,
+    callback?: (error?: string) => void,
+  ) => Promise<void>;
 }
 
 const initialState: RequestState = {
-  request: null,
+  request: [],
   loading: false,
   error: null,
+  //   acceptRequestLoading: false,
+  //   acceptRequestError: null,
 };
 
 const useRequestStore = create<RequestState & RequestActions>((set, get) => ({
@@ -28,7 +37,6 @@ const useRequestStore = create<RequestState & RequestActions>((set, get) => ({
       set({request: requests, loading: false});
     });
     socket.on('changeStatusFriend', request => {
-      //   console.log(request);
       set(state => {
         const prev = state.request || [];
         const index = prev.findIndex(req => req._id === request._id);
@@ -46,28 +54,46 @@ const useRequestStore = create<RequestState & RequestActions>((set, get) => ({
         return {request: newRequests};
       });
     });
-    // socket.on('changeStatusFriend', friend => {
-    //   set(prev => {
-    //     if (prev.users) {
-    //       const index = prev.users.findIndex(
-    //         user => user.friend?._id === friend._id,
-    //       );
-    //       if (index !== -1) {
-    //         const newUsers = [...prev.users];
-    //         const us = newUsers[index];
-    //         newUsers.splice(index, 1, {...us, friend: friend});
-    //         return {users: newUsers};
-    //       } else {
-    //       }
-    //     }
-    //     return prev;
-    //   });
-    // });
+    socket.on('removeRequest', idRequest => {
+      set(state => {
+        if (!state.request) return state;
+        const prev = state.request;
+        const index = prev.findIndex(req => req._id == idRequest);
+        let newRequests = [...prev];
+        if (index !== -1) {
+          newRequests.splice(index, 1);
+          return {request: newRequests};
+        }
+        return state;
+      });
+    });
+  },
+  acceptRequest: async (friend: Friend) => {
+    const socket = useAuthStore.getState().socket;
+    // console.log(friend);
+    // set({acceptRequestLoading: true, acceptRequestError: null});
+    socket.emit('acceptRequest', friend, error => {
+      if (!error) {
+        // set({acceptRequestError: error});
+        return Promise.resolve();
+      } else {
+        return Promise.reject(error);
+        // set({acceptRequestError: null});
+      }
+    });
   },
   clearAll: () => {
     //remove all event socket
     // const socket = useAuthStore.getState().socket;
-    set({request: null, loading: false, error: null});
+    // socket.off('changeStatusFriend');
+    // socket.off('removeRequest');
+    set({
+      request: [],
+      loading: false,
+      error: null,
+      //   acceptRequestLoading: false,
+      //   acceptRequestError: null,
+    });
   },
 }));
 

@@ -1,67 +1,44 @@
-import React, {FC, memo} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import Thumbnail from 'components/common/Thumbnail';
-import MyTheme from 'src/config/theme';
+import React, {FC, memo, useCallback} from 'react';
 import {UserSearch} from 'src/types/user';
-import FriendStatus from './FriendStatus';
-import {differenceInDays} from 'src/lib/date';
+import UserFriend from 'components/common/UserFriend/UserFriend';
+import useChangeStatusFriend from 'src/hooks/useChangeStatusFriend';
+import {EStatusFriend} from 'src/config/user.const';
+import useSearchUserStore from 'src/stores/SearchUserStore';
 
 interface SearchRowListProps {
   userSearch: UserSearch;
 }
 
 const SearchRow: FC<SearchRowListProps> = ({userSearch}) => {
-  const isNew = userSearch.createdAt
-    ? differenceInDays(new Date(), new Date(userSearch.createdAt)) < 7
-    : false;
+  const {loading, changeStatus: changeStatusApi} = useChangeStatusFriend(
+    userSearch._id,
+    userSearch.friend?._id,
+  );
+  const changeStatus = useSearchUserStore(state => state.changeStatus);
+
+  const _onChangePress = useCallback(
+    async (status: EStatusFriend) => {
+      try {
+        const friend = await changeStatusApi(status);
+        if (friend) {
+          changeStatus(friend);
+        }
+      } catch (e) {}
+    },
+    [changeStatus, changeStatusApi],
+  );
+
   return (
-    <View style={styles.itemContainer}>
-      <View style={styles.left}>
-        <Thumbnail uri={userSearch.urlImageProfile} width={52} isNew={isNew} />
-        <View style={styles.detailscontainer}>
-          <Text style={styles.username}>
-            {userSearch.username.toLowerCase()}
-          </Text>
-          <Text style={styles.email}>{userSearch.email.toLowerCase()}</Text>
-        </View>
-      </View>
-      <View>
-        <FriendStatus
-          friend={userSearch.friend}
-          idUser={userSearch._id || ''}
-        />
-      </View>
-    </View>
+    <UserFriend
+      loading={loading}
+      email={userSearch.email}
+      username={userSearch.username}
+      urlImageProfile={userSearch.urlImageProfile}
+      createdAt={userSearch.createdAt}
+      onButtonPress={_onChangePress}
+      friend={userSearch.friend}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: 'row',
-    gap: 16,
-    padding: 16,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    justifyContent: 'space-between',
-    borderBottomColor: MyTheme.colors.border,
-  },
-  left: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  username: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: MyTheme.colors.text,
-  },
-  detailscontainer: {
-    gap: 2,
-  },
-  email: {
-    fontSize: 14,
-    color: '#8e8e93',
-  },
-});
 
 export default memo(SearchRow);

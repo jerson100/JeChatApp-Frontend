@@ -19,6 +19,8 @@ interface SearchUserActions {
   changeStatus: (friend: Friend) => void;
   setSearchText: (searchText: string) => void;
   clearSearch: () => void;
+  onEvents: () => void;
+  removeEvents: () => void;
 }
 
 const initialState: SearchUserState = {
@@ -32,6 +34,31 @@ const initialState: SearchUserState = {
 const useSearchUserStore = create<SearchUserState & SearchUserActions>(
   (set, get) => ({
     ...initialState,
+    onEvents: () => {
+      const socket = useAuthStore.getState().socket;
+      socket.on('stateChangeInSearch', friend => {
+        set(state => {
+          if (!state.users) return state;
+          const index = state.users.findIndex(
+            user =>
+              user.friend?._id === friend._id ||
+              user._id === (friend.senderUserId as User)._id ||
+              user._id === (friend.receiverUserId as User)._id,
+          );
+          if (index !== -1) {
+            const newUsers = [...state.users];
+            const user = newUsers[index];
+            const newUs = {
+              ...user,
+              friend: friend,
+            };
+            newUsers.splice(index, 1, newUs);
+            return {users: newUsers};
+          }
+          return state;
+        });
+      });
+    },
     getUsers: async (searchText, signal) => {
       set({loading: true, error: null});
       try {
@@ -60,7 +87,7 @@ const useSearchUserStore = create<SearchUserState & SearchUserActions>(
           const index = prev.users.findIndex((user: UserSearch) => {
             const senderUserId = friend.senderUserId as User;
             const receiverUserId = friend.receiverUserId as User;
-            console.log(senderUserId);
+            // console.log(senderUserId);
             return (
               user.friend?._id === friend._id ||
               user._id === senderUserId._id ||
@@ -86,6 +113,10 @@ const useSearchUserStore = create<SearchUserState & SearchUserActions>(
     },
     clearSearch: () => {
       set(initialState);
+    },
+    removeEvents: () => {
+      const socket = useAuthStore.getState().socket;
+      socket.off('stateChangeInSearch');
     },
   }),
 );

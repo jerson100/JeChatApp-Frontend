@@ -5,7 +5,7 @@ import FriendService from 'src/services/friendService';
 import {Friend} from 'src/types/friend';
 
 export default function useChangeStatusFriend(
-  idUser: string,
+  receiverUserId?: string,
   idFriend?: string,
 ) {
   const [loading, setLoading] = useState(false);
@@ -16,8 +16,8 @@ export default function useChangeStatusFriend(
       setLoading(true);
       setError(null);
       try {
-        if (EStatusFriend.SEND === status) {
-          return await FriendService.createFriend(idUser);
+        if (EStatusFriend.SEND === status && receiverUserId) {
+          return await FriendService.createFriend(receiverUserId);
         } else if (EStatusFriend.ACCEPT === status && idFriend) {
           return await FriendService.patchFriend(idFriend);
         }
@@ -36,7 +36,7 @@ export default function useChangeStatusFriend(
       }
       return null;
     },
-    [idFriend, idUser],
+    [idFriend, receiverUserId],
   );
 
   return useMemo(() => {

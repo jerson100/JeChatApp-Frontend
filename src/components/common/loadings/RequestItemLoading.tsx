@@ -1,11 +1,15 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {View, StyleSheet} from 'react-native';
 import Skeleton from '../Skeleton';
 
-const SearchLoading = () => {
+type Props = {
+  count?: number;
+};
+
+const RequestItemLoading: FC<Props> = ({count = 10}) => {
   return (
     <View style={styles.container}>
-      {Array(50)
+      {Array(count)
         .fill(0)
         .map((_, index) => (
           <Skeleton key={index} height={42} />
@@ -21,4 +25,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchLoading;
+export default RequestItemLoading;

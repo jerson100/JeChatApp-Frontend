@@ -1,1 +1,1 @@
-export {default as SearchLoading} from './SearchLoading';
+export {default as SearchLoading} from './RequestItemLoading';

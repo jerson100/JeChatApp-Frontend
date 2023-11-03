@@ -1,14 +1,17 @@
-import React, {useRef, useMemo, useCallback} from 'react';
+import React, {useRef, useMemo, useCallback, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {StyleSheet} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import Content from './components/Content';
+import useSearchUserStore from 'src/stores/SearchUserStore';
 
 const SearchScreen = () => {
+  const onEvents = useSearchUserStore(state => state.onEvents);
+  const removeEvents = useSearchUserStore(state => state.removeEvents);
+
   const navigation = useNavigation();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -20,6 +23,15 @@ const SearchScreen = () => {
   //   const handleSheetChanges = useCallback((index: number) => {
   //     console.log('handleSheetChanges', index);
   //   }, []);
+
+  useEffect(() => {
+    console.log('mounter search');
+    onEvents();
+    return () => {
+      removeEvents();
+      console.log('unmount search');
+    };
+  }, [removeEvents]);
 
   const goBack = () => {
     navigation.goBack();
